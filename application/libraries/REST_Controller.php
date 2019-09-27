@@ -2214,4 +2214,33 @@ trait REST_Controller {
             exit;
         }
     }
+
+    public function _getUser ( $token ) {
+        date_default_timezone_set( 'Asia/Manila' );
+        $access_token = $this->_get_access_token( 'access_token_token', $token );
+        $message = 'Invalid Token';
+        if ( $access_token ) {
+            // $dbdate = strtotime( $access_token->date_accessed );
+            $user = $this->_get_user( $access_token->access_token_user_id);
+            return $user;
+        }
+
+        $this->response( array(
+            'status'  => FALSE,
+            'message' => $message
+        ), 400 );
+
+    }
+
+    function _get_access_token ( $field, $value ) {
+        $query = $this->rest->db->where( $field, $value )->get( 'access_tokens' );
+        $row = $query->row();
+        return (isset( $row )) ? $row : FALSE;
+    }
+
+    function _get_user ( $id ) {
+        $query = $this->rest->db->where( 'user_id', $id )->get( 'users' );
+        $row = $query->row();
+        return (isset( $row )) ? $row : FALSE;
+    }
 }

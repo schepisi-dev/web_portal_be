@@ -75,6 +75,7 @@
 		}
 
 		public function save ( $data ) {
+			$data[$this->date_created] = date('Y-m-d H:i:s');
 			$this->db->insert( $this->table, $data );
 			$query = $this->db->get_where( $this->table, array( $this->id => $this->db->insert_id() ) );
 			return $query->row();

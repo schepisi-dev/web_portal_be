@@ -23,7 +23,7 @@ class Migration_Create_Configs extends CI_Migration
                 'type' => 'TEXT'
             ),
             'config_created_at' => array(
-                'type' => 'TIMESTAMP',
+                'type' => 'DATETIME',
             )
         ));
         $this->dbforge->add_key('config_id', true);
@@ -32,6 +32,16 @@ class Migration_Create_Configs extends CI_Migration
         $this->db->insert($this->table, [
             'config_name'    => "application_name",
             'config_value'   => "Schepisi Web Portal",
+        ]);
+        
+        $this->db->insert($this->table, [
+            'config_name'    => "pw_config",
+            'config_value'   => serialize(array(
+                'pw_min_length' => 8,
+                'pw_max_length' => 32,
+                'pw_allow_special_character' => 'FALSE',
+                
+            ))
         ]);
     }
 
