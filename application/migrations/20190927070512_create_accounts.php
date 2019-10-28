@@ -13,16 +13,18 @@ class Migration_Create_Accounts extends CI_Migration
         // Table structure for table $this->table
         $this->dbforge->add_field(array(
             'account_id' => array( 'type' => 'MEDIUMINT', 'constraint' => '8', 'unsigned' => true, 'auto_increment' => true ),
-            'account_name' => array( 'type' => 'VARCHAR', 'constraint' => '100' ),           
-			'account_uuid' => array( 'type'       => 'VARCHAR', 'constraint' => 32 ),
+            'account_name' => array( 'type' => 'VARCHAR', 'constraint' => '100' ),
+            'account_number' => array( 'type' => 'VARCHAR', 'constraint' => '15' ),
+			'account_uuid' => array( 'type' => 'VARCHAR', 'constraint' => '32' ),
             'account_organization_id' => array( 'type' => 'MEDIUMINT', 'constraint' => '8', ), 
 
             'account_created_on' => array( 'type' => 'DATETIME', 'null' => false ),
             'account_modified_on' => array( 'type' => 'DATETIME', 'null' => false ),
-            'account_deleted' => array( 'type' => 'DATETIME', 'null' => false ),
+            'account_deleted' => array('type' => 'TINYINT', 'constraint' => '1', 'null' => false ),
             'account_deleted_on' => array( 'type' => 'DATETIME', 'null' => false )
         ));
         $this->dbforge->add_key('account_id', true);
+        $this->dbforge->add_key('account_number');
         $this->dbforge->add_key('account_organization_id');
         $this->dbforge->create_table($this->table);
     }

@@ -40,6 +40,11 @@ class Migration_Create_Transactions extends CI_Migration
             'transaction_date_synced' => array(
                 'type' => 'DATETIME',
             ),
+            'transaction_organization_id' => array(
+                'type' => 'MEDIUMINT',
+                'constraint' => '8',
+                'unsigned' => true,
+            ),
 
         ));
         $this->dbforge->add_key('transaction_id', true);

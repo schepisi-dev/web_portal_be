@@ -87,10 +87,16 @@ class Site extends CI_Controller {
         date_default_timezone_set( 'Asia/Manila' );
 
         if ( $this->users->login($this->input->post('username'), $this->input->post('password'))) {
+            $user = $this->_getUser($this->post( 'username' ));
+            $this->load->model('Organization_model');
+			$organization = $this->Organization_model->get_by_id($user->user_organization_id);
             $data = array(
-                'username'       => $this->input->post( 'username' ),
-                'is_logged_in'   => TRUE,
+                'username' => $this->post( 'username' ),
+                'is_logged_in' => TRUE,
                 'date_logged_in' => date( "Y-m-d H:i:s" ),
+                'organization_id' => $user->user_organization_id,
+                'organization_name' => $organization->organization_name,
+                'role' => $user->user_role
             );
 
             return $data;
@@ -106,6 +112,13 @@ class Site extends CI_Controller {
         } else {
             return TRUE;
         }
+    }
+
+    private function _getUser( $username ){
+        $this->load->model('User_model', 'user');
+        $user_logged_id = $this->user->get_by_attribute('user_username', $username);
+
+        return $user_logged_id;
     }
 
 

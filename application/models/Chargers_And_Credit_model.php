@@ -7,18 +7,13 @@ class Chargers_And_Credit_model extends MY_Model {
 	protected $key					= "chargers_and_credit_id";
 	protected $date_format			= "datetime";
 	
-	protected $set_created			= TRUE;
-	protected $created_field 		= "chargers_and_credit_created_on";
-	
-	protected $set_modified 		= TRUE;
-	protected $modified_field 		= "chargers_and_credit_modified_on";
-	
-	protected $soft_deletes        = TRUE;
-	protected $deleted		 		= "chargers_and_credit_deleted";
-	protected $deleted_field 		= "chargers_and_credit_deleted_on";
+	protected $set_created			= FALSE;	
+	protected $set_modified 		= FALSE;	
+	protected $soft_deletes        	= FALSE;
 
-    public function custom_function () {
 
-    }
+	function get_sum(){
+		
+	}
 
 }

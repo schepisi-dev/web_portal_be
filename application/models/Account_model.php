@@ -17,7 +17,28 @@ class Account_model extends MY_Model {
 	protected $deleted		 		= "account_deleted";
 	protected $deleted_field 		= "account_deleted_on";
 
-    public function custom_function () {
+    function save_account ($action, $post) {	
+
+		if ($action=='add') {	
+			$this->data = array(
+				'account_name' => $post['name'],
+				'account_number' => $post['number'],
+				'account_organization_id' => $post['organization_id'],
+				'account_uuid' => md5( getToken( 25 ) )
+			);
+			$result = $this->save();
+		} else {
+			//get account to be updated
+			$account = $this->get_by_attribute('account_uuid', $post['uuid']);
+			$this->data = array(
+				'account_name' => (isset($post['name']))? $post['name']: $account->account_name,
+				'account_number' => (isset($post['number']))? $post['number']: $account->account_number,
+				'account_uuid' => $post['uuid']
+			);
+			$result = $this->update(array($this->key => $account->account_id));
+		}
+
+		return $result;
 
     }
 

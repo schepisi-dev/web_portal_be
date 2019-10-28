@@ -7,15 +7,10 @@ class Service_And_Equipment_model extends MY_Model {
 	protected $key					= "service_and_equipment_id";
 	protected $date_format			= "datetime";
 	
-	protected $set_created			= TRUE;
-	protected $created_field 		= "service_and_equipment_created_on";
-	
-	protected $set_modified 		= TRUE;
-	protected $modified_field 		= "service_and_equipment_modified_on";
-	
-	protected $soft_deletes         = TRUE;
-	protected $deleted		 		= "service_and_equipment_deleted";
-	protected $deleted_field 		= "service_and_equipment_deleted_on";
+	protected $set_created			= FALSE;	
+	protected $set_modified 		= FALSE;	
+	protected $soft_deletes        	= FALSE;
+
 
     public function custom_function () {
 

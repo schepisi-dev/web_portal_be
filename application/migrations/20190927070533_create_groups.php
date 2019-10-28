@@ -18,7 +18,7 @@ class Migration_Create_Groups extends CI_Migration
 
             'group_created_on' => array( 'type' => 'DATETIME', 'null' => false ),
             'group_modified_on' => array( 'type' => 'DATETIME', 'null' => false ),
-            'group_deleted' => array( 'type' => 'DATETIME', 'null' => false ),
+            'group_deleted' => array( 'type' => 'TINYINT', 'constraint' => '1', 'null' => false ),
             'group_deleted_on' => array( 'type' => 'DATETIME', 'null' => false )
         ));
         $this->dbforge->add_key('group_id', true);

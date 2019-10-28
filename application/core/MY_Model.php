@@ -2,6 +2,8 @@
 	defined('BASEPATH') OR exit('No direct script access allowed');
 
 	class MY_Model extends CI_Model {
+		
+		var $data = array();
 
 		public function __construct () {
 			parent::__construct();
@@ -67,17 +69,17 @@
 
 		public function get_by_id ( $id ) {
 			$this->db->from( $this->table );
-			$this->db->where( $this->id, $id );
+			$this->db->where( $this->key, $id );
 			$query = $this->db->get();
 			$row = $query->row();
 
 			return (isset( $row )) ? $row : FALSE;
 		}
 
-		public function save ( $data ) {
-			$data[$this->date_created] = date('Y-m-d H:i:s');
-			$this->db->insert( $this->table, $data );
-			$query = $this->db->get_where( $this->table, array( $this->id => $this->db->insert_id() ) );
+		public function save ($data=false) {
+			($this->set_created)? $this->data[$this->created_field] = date('Y-m-d H:i:s'): '';
+			$this->db->insert( $this->table, ($data)? $data:$this->data );
+			$query = $this->db->get_where( $this->table, array( $this->key => $this->db->insert_id() ) );
 			return $query->row();
 		}
 
@@ -86,8 +88,10 @@
 			return TRUE;
 		}
 
-		public function update ( $where, $data ) {
-			$this->db->update( $this->table, $data, $where );
+		public function update ( $where ) {
+			($this->set_modified)? $this->data[$this->modified_field] = date('Y-m-d H:i:s'): '';
+			$this->db->update( $this->table, $this->data, $where );
+			
 			$query = $this->db->get_where( $this->table, $where );
 			return $query->row();
 		}
@@ -99,7 +103,7 @@
 		}
 
 		public function delete_by_id ( $id ) {
-			$query = $this->db->delete( $this->table, array( $this->id => $id ) );
+			$query = $this->db->delete( $this->table, array( $this->key => $id ) );
 			return $query;
 		}
 

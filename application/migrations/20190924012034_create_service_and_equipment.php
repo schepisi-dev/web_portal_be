@@ -34,7 +34,8 @@ class Migration_Create_Service_And_Equipment extends CI_Migration
                 'constraint' => '25',
             ), 
             'service_and_equipment_service_owner' => array(
-                'type' => 'DATE',
+                'type' => 'VARCHAR',
+                'constraint' => '255',
             ), 
             'service_and_equipment_charge_type_description' => array(
                 'type' => 'VARCHAR',

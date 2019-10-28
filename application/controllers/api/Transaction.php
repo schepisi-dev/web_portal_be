@@ -36,18 +36,11 @@ class Transaction extends CI_Controller {
 
     public function index_get()
     {
-        if($this->get('type')){
-            $this->load->model('Transaction_model', 'transaction');
-            $response = $this->transaction->get_transactions($this->get('type'));
-            $this->response( array(
-                'message' => $response
-            ), 200 );
-        } else {
-			$error = "Type is required.";
-		}
-		$this->response( array(
-			'message' => $error
-		), 400 );
+        $this->load->model('Transaction_model', 'transaction');
+        $response = $this->transaction->get_transactions($this->get('type'), $this->user);
+        $this->response( array(
+            'message' => $response
+        ), 200 );
     }
 
     public function index_post($action='add')
@@ -75,6 +68,7 @@ class Transaction extends CI_Controller {
 		if ( $action == "add" ) {
 			$this->form_validation->set_rules( 'json', 'json', 'strip_tags|trim|required' );
 			$this->form_validation->set_rules( 'type', 'type', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'organization_id', 'organization_id', 'strip_tags|trim|required' );
 		} else if ( $action == "get" ) {            
 			$this->form_validation->set_rules( 'type', 'type', 'strip_tags|trim|required' );
         }

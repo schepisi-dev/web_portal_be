@@ -13,11 +13,21 @@ class Organization_model extends MY_Model {
 	protected $set_modified 		= TRUE;
 	protected $modified_field 		= "organization_modified_on";
 	
-	protected $soft_deletes        = TRUE;
+	protected $soft_deletes         = TRUE;
 	protected $deleted		 		= "organization_deleted";
 	protected $deleted_field 		= "organization_deleted_on";
 
-    public function custom_function () {
+	
+    public function save_organization ($action, $post) {		
+		$this->data['organization_name'] = $post['name'];
+
+		if ($action=='add') {
+			$result = $this->save();			
+		} else {
+			$result = $this->update(array($this->key => $post['id']));
+		}
+
+		return $result;
 
     }
 

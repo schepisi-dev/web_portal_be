@@ -3,8 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Access_token_model extends MY_Model {
 
-	var $table = 'access_tokens';
-	var $id = 'access_token_id';
+	protected $table				= "access_tokens";
+	protected $key					= "access_token_id";
+	protected $date_format			= "datetime";
+	
+	protected $set_created			= FALSE;
+	protected $set_modified 		= FALSE;
+	protected $soft_deletes         = FALSE;
 
 	function get_token ( $identifier) {
 		date_default_timezone_set( 'Asia/Manila' );
@@ -17,21 +22,21 @@ class Access_token_model extends MY_Model {
 		// if member already exists in access token, refresh token value
 		$access_token = $this->find( array( 'access_token_user_id' => $user->user_id) );		
 		if ( $access_token ) {
-			$data = array(
+			$this->data = array(
 				'access_token_token'                 => $generated_token,
 				'access_token_ip'                    => $this->input->ip_address(),
 				'access_token_date_accessed'         => date( 'Y-m-d H:i:s' ),
 			);
-			$token = $this->update( array( 'access_token_user_id' => $user->user_id), $data );
+			$token = $this->update( array( 'access_token_user_id' => $user->user_id));
 
 		} else {
-			$data = array(
+			$this->data = array(
 				'access_token_token'        	=> $generated_token,
 				'access_token_user_id'      	=> $user->user_id,
 				'access_token_ip'           	=> $this->input->ip_address(),
 				'access_token_date_accessed'	=> date( 'Y-m-d H:i:s' ),
 			);
-			$token = $this->save( $data );
+			$token = $this->save( );
 
 		}
 

@@ -9,11 +9,11 @@ require APPPATH . 'libraries/REST_Controller.php';
 require APPPATH . 'libraries/Format.php';
 
 /**
- * EDIT: This is an example of a few basic Organization interaction methods you could use
+ * EDIT: This is an example of a few basic Account interaction methods you could use
  * all done with a hardcoded array
  *
  */
-class Organization extends CI_Controller {
+class Account extends CI_Controller {
     use REST_Controller {
         REST_Controller::__construct as private __resTraitConstruct;
     }
@@ -29,14 +29,15 @@ class Organization extends CI_Controller {
          'index_get'  => array( 'level' => 10, 'limit' => 500 ), //select
          'index_post' => array( 'level' => 5, 'limit' => 50 ), //add, edit
         );
-        
-        $this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->delete( 'token' ) );
+        $this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->post( 'token' ) );
+    
     }
 
-    public function index_get($id=false)
+    public function index_get($uuid=false)
     {
-        $this->load->model('Organization_model', 'organization');
-        $response = $this->organization->{($id)?'get_by_id':'find_all'}($id);            
+        $this->load->model('Account_model', 'account');
+        $account = $this->account->get_by_attribute('account_uuid', $uuid);
+        $response = $this->account->{($uuid)?'get_by_id':'find_all'}($account->account_id);            
         $this->response( array(
             'message' => $response
         ), 200 );
@@ -45,9 +46,13 @@ class Organization extends CI_Controller {
 
     public function index_post( $action='add' )
     {
+        $this->_checkPermission($this->user);
         if($this->_validate($action)){
-            $this->load->model('Organization_model', 'organization');
-            $response = $this->organization->save_organization($action, $this->post());            
+            $this->load->model('Account_model', 'account');
+            $account = array_merge($this->post(), array('organization_id' => $this->user->user_organization_id ));
+            //set organization id based on the logged in user
+            //check user if logged in as standard user
+            $response = $this->account->save_account($action, $account);            
             $this->response( array(
                 'message' => $response
             ), 200 );
@@ -60,23 +65,14 @@ class Organization extends CI_Controller {
 
     }
 
-    public function test_delete( $action='add' )
-    {
-        pr($this);
-        $this->response( array(
-			'message' => 'Deleted'
-		), 400 );
-
-    }
-
     private function _validate ( $action = "add" ) { //action allowed: add, update
 
 		if ( $action == "add" ) {
-            //required fields upon user creation = user role, user username, user password
 			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'number', 'number', 'strip_tags|trim|required' ); //must be unique
 		} else if ( $action == "edit" ) {
-			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
-			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
+			// $this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'uuid', 'uuid', 'strip_tags|trim|required' );
         }
 
 		$this->form_validation->set_error_delimiters( '', '' );
@@ -85,5 +81,21 @@ class Organization extends CI_Controller {
 		} else {
 			return TRUE;
 		}
+    }
+
+    private function _checkPermission($user){
+        $withError = FALSE;
+
+        if($user->user_role!='standard'){
+            $error[] = 'User is not a Standard User!';
+            $withError = TRUE;
+        }
+
+        if ($withError){
+            $this->response( array(
+                'errors' => $error
+            ), 400 );
+        }
+
     }
 }        

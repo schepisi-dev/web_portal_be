@@ -17,11 +17,19 @@ class Migration_Create_Organizations extends CI_Migration
 
             'organization_created_on' => array( 'type' => 'DATETIME', 'null' => false ),
             'organization_modified_on' => array( 'type' => 'DATETIME', 'null' => false ),
-            'organization_deleted' => array( 'type' => 'DATETIME', 'null' => false ),
+            'organization_deleted' => array( 'type' => 'TINYINT', 'constraint' => '1', 'null' => false ),
             'organization_deleted_on' => array( 'type' => 'DATETIME', 'null' => false )
         ));
         $this->dbforge->add_key('organization_id', true);
         $this->dbforge->create_table($this->table);
+
+        $role = array('administrator', 'standard', 'basic');
+        for ($i = 0; $i <= 2; $i++)
+		{
+			$this->db->insert($this->table, [
+				'organization_name' => $role[$i]. '_organization',
+			]);
+		}
     }
 
     public function down()

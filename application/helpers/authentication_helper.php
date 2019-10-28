@@ -64,20 +64,24 @@
 			$regex_number = '/[0-9]/';
 			$regex_special = '/[!@#$%^&*()\-_=+{};:,<.>§~]/';
 
-			if (empty($password)){ return $error['e_required']; }
+			$response = array();
+			$response = array(
+				'status' => TRUE
+			);
+			if (empty($password)){ $response['status'] = FALSE; $response['error']= $error['e_required']; }
 
-			if (preg_match_all($regex_lowercase, $password) < 1){ return $error['e_lowercase']; }
+			if (preg_match_all($regex_lowercase, $password) < 1){  $response['error']= $error['e_lowercase']; }
 
-			if (preg_match_all($regex_uppercase, $password) < 1){ return $error['e_uppercase']; }
+			if (preg_match_all($regex_uppercase, $password) < 1){  $response['error']= $error['e_uppercase']; }
 
-			if (preg_match_all($regex_number, $password) < 1){ return $error['e_number']; }
+			if (preg_match_all($regex_number, $password) < 1){  $response['error']= $error['e_number']; }
 
-			if ($allow_special_characters=='TRUE' AND (preg_match_all($regex_special, $password) < 1)){ return $error['e_special_character']; }
+			if ($allow_special_characters=='TRUE' AND (preg_match_all($regex_special, $password) < 1)){  $response['error']= $error['e_special_character']; }
 
-			if (strlen($password) < $min_length){ return $error['e_min_length']; }
+			if (strlen($password) < $min_length){  $response['error']= $error['e_min_length']; }
 
-			if (strlen($password) > $max_length){ return $error['e_max_length']; }
+			if (strlen($password) > $max_length){  $response['error']= $error['e_max_length']; }
 			
-			return TRUE;
+			return $response;
 		}
 	}
