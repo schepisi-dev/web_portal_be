@@ -48,8 +48,8 @@ class User_model extends MY_Model {
 		return FALSE;
 	}
 
-	public function _find_all(){
-		$users = $this->find_all();
+	public function _find_all($offset, $limit){
+		$users = $this->find_all($offset, $limit);
 		$formatted_user = array();
 		$this->load->model('Organization_model');
 		foreach($users as $user) {

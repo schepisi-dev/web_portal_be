@@ -37,6 +37,11 @@ class Migration_Create_Transactions extends CI_Migration
                 'constraint' => '15',
                 'null' => false,
             ),
+            'transaction_service_number' => array(
+                'type' => 'VARCHAR',
+                'constraint' => '15',
+                'null' => false,
+            ),
             'transaction_date_synced' => array(
                 'type' => 'DATETIME',
             ),

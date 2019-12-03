@@ -70,6 +70,7 @@ class Transaction_model extends MY_Model {
                 'transaction_type' => $type,
                 'transaction_table_id' => $saved_entry->{$type.'_id'},
                 'transaction_account_number' => $entry[$type.'_account_number'],
+                'transaction_service_number' => $entry[$type.'_service_number'],
                 'transaction_organization_id' => $post['organization_id']
             );
             $saved[] = $this->save();
@@ -78,7 +79,7 @@ class Transaction_model extends MY_Model {
 
     }
 
-    function get_transactions($type, $group = '', $month = ''){
+    function get_transactions($type, $user, $offset = 0, $limit = 10){
 
         //must be from the group by the user logged in
 
@@ -88,14 +89,14 @@ class Transaction_model extends MY_Model {
 
         $return_array = array();
         if(in_array($type, array('call_and_usage','chargers_and_credit','service_and_equipment'))){ //if type is given
-            $transactions = $this->find(array('transaction_type' => $type));
+            $transactions = $this->find(array('transaction_type' => $type), $offset, $limit);
             if($transactions){                
                 foreach($transactions as $transaction){
                     $return_array[] = $this->{$type}->get_by_id($transaction->transaction_table_id);
                 }
             }
         } else {
-            $transactions = $this->find_all();
+            $transactions = $this->find_all( (int)$offset, (int)$limit);
             if($transactions){
                 foreach($transactions as $transaction){
                     $return_array[] = $this->{$transaction->transaction_type}->get_by_id($transaction->transaction_table_id);
@@ -170,9 +171,13 @@ class Transaction_model extends MY_Model {
 		}
         $this->db->reset_query();
 
-        
+
 		//add saving cache
 		return $response;
-	}
+    }
+    
+    function get_transactions_by_service_number($service_number){
+
+    }
 
 }

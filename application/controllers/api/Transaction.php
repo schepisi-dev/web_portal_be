@@ -37,7 +37,7 @@ class Transaction extends CI_Controller {
     public function index_get()
     {
         $this->load->model('Transaction_model', 'transaction');
-        $response = $this->transaction->get_transactions($this->get('type'), $this->user);
+        $response = $this->transaction->get_transactions($this->get('type'), $this->user, $this->get('offset'), $this->get('limit'));
         $this->response( array(
             'message' => $response
         ), 200 );

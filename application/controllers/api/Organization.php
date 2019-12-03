@@ -62,7 +62,6 @@ class Organization extends CI_Controller {
 
     public function test_delete( $action='add' )
     {
-        pr($this);
         $this->response( array(
 			'message' => 'Deleted'
 		), 400 );

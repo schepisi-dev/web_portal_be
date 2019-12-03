@@ -33,16 +33,26 @@ class Site extends CI_Controller {
         $this->load->model("User_model", "users");
     }
 
-    public function login_get()
-    {
-        $this->response('method called', 200);
+    function index_get () {
+		// do not remove this
+
+		show_404();
     }
 
-    // function index_get () {
-	// 	// do not remove this
+    function test_get(){
+        
+    }
 
-	// 	show_404();
-	// }
+    public function login_get () {
+        $user = $this->_getUser( $this->input->get( 'token' ) );
+		if ( $user ) {
+			$this->response( array(
+				'response' => $user
+			), 200);
+		} else {
+            echo $this->input->get( 'token' );
+        }
+	}
 
 	public function login_post () {
 		if ( $this->_validate( 'login' ) ) {
@@ -87,7 +97,7 @@ class Site extends CI_Controller {
         date_default_timezone_set( 'Asia/Manila' );
 
         if ( $this->users->login($this->input->post('username'), $this->input->post('password'))) {
-            $user = $this->_getUser($this->post( 'username' ));
+            $user = $this->_getUserByUsername($this->post( 'username' ));
             $this->load->model('Organization_model');
 			$organization = $this->Organization_model->get_by_id($user->user_organization_id);
             $data = array(
@@ -114,7 +124,7 @@ class Site extends CI_Controller {
         }
     }
 
-    private function _getUser( $username ){
+    private function _getUserByUsername( $username ){
         $this->load->model('User_model', 'user');
         $user_logged_id = $this->user->get_by_attribute('user_username', $username);
 

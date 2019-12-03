@@ -49,8 +49,8 @@
 			return $this->db->count_all_results();
 		}
 
-		public function find ( $criteria ) {
-			$query = $this->db->get_where( $this->table, $criteria );
+		public function find ( $criteria, $offset = 0, $limit = 10 ) {
+			$query = $this->db->get_where( $this->table, $criteria, $limit, $offset );
 			if ( $query->result() != NULL ) {
 				return $query->result();
 			} else {
@@ -58,8 +58,8 @@
 			}
 		}
 
-		public function find_all () {
-			$query = $this->db->get( $this->table );
+		public function find_all ( $offset = 0, $limit = 0 ) {
+			$query = $this->db->get( $this->table, $limit, $offset );
 			if ( $query->result() != NULL ) {
 				return $query->result();
 			} else {
@@ -121,7 +121,7 @@
 			return (isset( $row )) ? $row : FALSE;
 		}
 
-		public function custom_query ( $selectQuery, $where, $groupBy, $orderBy ) {
+		public function custom_query ( $selectQuery, $where = false, $groupBy = false, $orderBy = false ) {
 			$this->db->select( $selectQuery );
 			if ( $where ) $this->db->where( $where );
 			if ( $groupBy ) $this->db->group_by( $groupBy );
@@ -131,3 +131,5 @@
 			return $query->result();
 		}
 	}
+
+	   	 	 	 	 	 	 	 	 	 	 	 	

@@ -46,10 +46,24 @@ class Accounts extends CI_Controller {
 
     public function test_get()
     {
-        $this->load->model('transaction_model', 'transaction');
-        $response = $this->transaction->get_sum_by_type();            
+        $this->load->model('Call_And_usage_model', 'call_and_usage');
+        $this->load->model('Chargers_And_Credit_model', 'chargers_and_credit');
+        $this->load->model('Service_And_Equipment_model', 'service_and_equipment');
+        
         $this->response( array(
-            'message' => $response
+            'call_and_usage' => array(
+                'total' => $this->call_and_usage->total(3), 
+                'types' => $this->call_and_usage->categorized(3)
+            ),
+            'chargers_and_credit' => array(
+                'total' => $this->chargers_and_credit->total(7), 
+                'types' => $this->chargers_and_credit->categorized(7)
+            ),
+            'service_and_equipment' => array(
+                'total' => $this->service_and_equipment->total(3), 
+                'types' => $this->service_and_equipment->categorized(3)
+            ),
+            'random' => rand(100000000, 99999999)
         ), 200 );
         
     }

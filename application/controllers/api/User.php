@@ -31,13 +31,24 @@ class User extends CI_Controller {
         );
 
         $this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->post( 'token' ) );
+        if ($this->user->user_role){}
+        
+    }
+
+    public function count_get($username=false)
+    {
+        $this->load->model('User_model');
+        $response = $this->User_model->find_all(0, 0);            
+        $this->response( array(
+            'message' => count($response)
+        ), 200 );
         
     }
 
     public function index_get($username=false)
     {
         $this->load->model('User_model');
-        $response = $this->User_model->_find_all();            
+        $response = $this->User_model->_find_all($this->get('offset'), $this->get('limit'));            
         $this->response( array(
             'message' => $response
         ), 200 );
@@ -74,17 +85,18 @@ class User extends CI_Controller {
         //if not admin, require organization id
         //username,email must be unique
         //check organization if valid
-
-        $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required' );
         $this->form_validation->set_rules( 'first_name', 'first_name', 'strip_tags|trim|required' );
         $this->form_validation->set_rules( 'last_name', 'last_name', 'strip_tags|trim|required' );
-        $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email' );
         $this->form_validation->set_rules( 'role', 'role', 'strip_tags|trim|required' );
         $this->form_validation->set_rules( 'organization_id', 'organization_id', 'strip_tags|trim|required|numeric' );
 
 		if ( $action == "add" ) {
+            $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|callback_username_check[]' );
             $this->form_validation->set_rules( 'password', 'password', 'strip_tags|trim|required'/*|callback_password_check*/ );
+            $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|callback_username_check[]' );
 		} else if ( $action == "edit" ) {
+            $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|callback_username_check['. $this->post('id') .']' );
+            $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|callback_username_check['. $this->post('id') .']' );
             //validate is user id is valid
             $this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
         }
@@ -123,5 +135,31 @@ class User extends CI_Controller {
             $this->form_validation->set_message('password_check', $result);
             return FALSE;
         }
+    }
+
+    public function username_check($username, $id=null)
+    {
+        $this->load->model('User_model');
+        $user = $this->User_model->get_by_attribute('user_username', $username);
+        if($user){
+            if($id==null OR $user->user_id != $id){
+                $this->form_validation->set_message('username_check', 'username already exists');
+                return FALSE;
+            }
+        } 
+        return TRUE;
+    }
+
+    public function email_check($email, $id=null)
+    {
+        $this->load->model('User_model');
+        $user = $this->User_model->get_by_attribute('user_email', $email);
+        if($user){
+            if($id==null OR $user->user_id != $id){
+                $this->form_validation->set_message('email_check', 'email already exists');
+                return FALSE;
+            }
+        } 
+        return TRUE;
     }
 }        

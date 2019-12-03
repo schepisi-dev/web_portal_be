@@ -2218,7 +2218,6 @@ trait REST_Controller {
     public function _getUser ( $token ) {
         date_default_timezone_set( 'Asia/Manila' );
         $access_token = $this->_get_access_token( 'access_token_token', $token );
-        $message = 'Invalid Token';
         if ( $access_token ) {
             // $dbdate = strtotime( $access_token->date_accessed );
             $user = $this->_get_user( $access_token->access_token_user_id);
@@ -2227,7 +2226,7 @@ trait REST_Controller {
 
         $this->response( array(
             'status'  => FALSE,
-            'message' => $message
+            'message' => 'Invalid Token'
         ), 400 );
 
     }
