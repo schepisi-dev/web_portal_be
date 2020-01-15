@@ -35,20 +35,26 @@ class User extends CI_Controller {
         
     }
 
-    public function count_get($username=false)
+    public function count_get()
     {
         $this->load->model('User_model');
-        $response = $this->User_model->find_all(0, 0);            
+        $response = $this->User_model->find_all(0, 0);
+        $breakdown = $this->User_model->get_count_breakdown();
         $this->response( array(
-            'message' => count($response)
+            'message' => array(
+                'count' => count($response),
+                'breakdown' => $breakdown
+            )
         ), 200 );
         
     }
 
     public function index_get($username=false)
     {
+        //if organization id = 0, return all users
+        //if not equal to 0 and standard user, fetch all co-org users
         $this->load->model('User_model');
-        $response = $this->User_model->_find_all($this->get('offset'), $this->get('limit'));            
+        $response = $this->User_model->_find_all($this->get('offset'), $this->get('limit'), $this->user->user_organization_id);            
         $this->response( array(
             'message' => $response
         ), 200 );

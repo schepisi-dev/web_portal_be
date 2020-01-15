@@ -29,7 +29,7 @@ class Accounts extends CI_Controller {
          'index_get'  => array( 'level' => 10, 'limit' => 500 ), //select
          'index_post' => array( 'level' => 5, 'limit' => 50 ), //add, edit
         );
-        //$this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->post( 'token' ) );
+        $this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->post( 'token' ) );
     
     }
 
@@ -44,7 +44,7 @@ class Accounts extends CI_Controller {
         
     }
 
-    public function test_get()
+    public function month_get($month = 3, $year = 2019)
     {
         $this->load->model('Call_And_usage_model', 'call_and_usage');
         $this->load->model('Chargers_And_Credit_model', 'chargers_and_credit');
@@ -52,20 +52,40 @@ class Accounts extends CI_Controller {
         
         $this->response( array(
             'call_and_usage' => array(
-                'total' => $this->call_and_usage->total(3), 
-                'types' => $this->call_and_usage->categorized(3)
+                'total' => $this->call_and_usage->total($month, $year), 
+                'types' => $this->call_and_usage->categorized($month, $year)
             ),
             'chargers_and_credit' => array(
-                'total' => $this->chargers_and_credit->total(7), 
-                'types' => $this->chargers_and_credit->categorized(7)
+                'total' => $this->chargers_and_credit->total($month, $year), 
+                'types' => $this->chargers_and_credit->categorized($month, $year)
             ),
             'service_and_equipment' => array(
-                'total' => $this->service_and_equipment->total(3), 
-                'types' => $this->service_and_equipment->categorized(3)
-            ),
-            'random' => rand(100000000, 99999999)
+                'total' => $this->service_and_equipment->total($month, $year), 
+                'types' => $this->service_and_equipment->categorized($month, $year)
+            )
         ), 200 );
         
+    }
+
+    public function year_get($year = 2019){
+        $this->load->model('Call_And_usage_model', 'call_and_usage');
+        $this->load->model('Chargers_And_Credit_model', 'chargers_and_credit');
+        $this->load->model('Service_And_Equipment_model', 'service_and_equipment');
+        $month_array = array('1' => 'January', '2' => 'February', '3' => 'March', '4' => 'April', '5' => 'May',
+                            '6' => 'June', '7' => 'July', '8' => 'August', '9' => 'September', '10' => 'October',
+                            '11' => 'November', '12' => 'December');
+        
+        $response = array();
+        foreach ($month_array as $k => $value) {
+
+            $response[] = array(
+                $value,
+                $this->call_and_usage->total($k, $year),
+                $this->chargers_and_credit->total($k, $year),
+                $this->service_and_equipment->total($k, $year)
+            );
+        }
+        $this->response( $response, 200 );
     }
 
     public function index_post( $action='add' )

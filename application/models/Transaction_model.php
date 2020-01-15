@@ -63,6 +63,7 @@ class Transaction_model extends MY_Model {
         //implement rollback upload
         //check if user is sending transaction type
 
+        $saved_transaction = array();
         foreach ($result as $entry){
             $saved_entry = $this->{$type}->save($entry);
             $this->data = array(
@@ -73,9 +74,11 @@ class Transaction_model extends MY_Model {
                 'transaction_service_number' => $entry[$type.'_service_number'],
                 'transaction_organization_id' => $post['organization_id']
             );
-            $saved[] = $this->save();
+            $saved = $this->save();
+            $saved_transaction[] = $saved;
         }
-        return $saved;
+        //insert saved data
+        return $saved_transaction;
 
     }
 
@@ -99,7 +102,7 @@ class Transaction_model extends MY_Model {
             $transactions = $this->find_all( (int)$offset, (int)$limit);
             if($transactions){
                 foreach($transactions as $transaction){
-                    $return_array[] = $this->{$transaction->transaction_type}->get_by_id($transaction->transaction_table_id);
+                    $return_array[] = $transaction/*$this->{$transaction->transaction_type}->get_by_id($transaction->transaction_table_id)*/;
                 }
             }
         }
@@ -125,21 +128,34 @@ class Transaction_model extends MY_Model {
 
     }
 
-    function get_sum_by_month($type='gst'){
+    function getSumByMonth($where = false, $table = 'call_and_usages', $groupedBy, $type='gst'){
 
-		$this->db->select("REPLACE(REPLACE(call_and_usage_".$type.",'.',''),'$','') as sum,
-								MONTH(call_and_usage_bill_issue_date) as month");
-		$this->db->group_by('month');
-		$query = $this->db->get('call_and_usages');
-		$response = array('call_and_usage' => array());
+		$this->db->select("SUM(REPLACE(REPLACE(".$table."_".$type.",'.',''),'$','')) as sum,
+            MONTH(".$table."_bill_issue_date) as month, YEAR(".$table."_bill_issue_date) as year");
+        $this->db->group_by($groupedBy);
+        if ( $where ) $this->db->where( $where );
+		$query = $this->db->get($table.'s');
+        $response[] = 0;
 		foreach ($query->result_array() as $result) {
-			$response['call_and_usage'][] = array(
+			$response[] = $result['sum']/100;
+		}
+		return end($response);
+	}
+
+    function get_sum_by_month($type='gst', $where = false, $table = 'call_and_usages'){
+
+		$this->db->select("REPLACE(REPLACE(".$table."_".$type.",'.',''),'$','') as sum,
+								MONTH(".$table."_bill_issue_date) as month");
+        $this->db->group_by('month');
+        if ( $where ) $this->db->where( $where );
+		$query = $this->db->get($table);
+		$response = array($table => array());
+		foreach ($query->result_array() as $result) {
+			$response[$table][] = array(
 				'month' => $result['month'],
 				'sum'	=> $result['sum']/100
 			);
 		}
-        $this->db->reset_query();
-		//add saving cache
 		return $response;
 	}
 

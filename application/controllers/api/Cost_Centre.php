@@ -2,17 +2,9 @@
 use Restserver\Libraries\REST_Controller;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// This can be removed if you use __autoload() in config.php OR use Modular Extensions
-/** @noinspection PhpIncludeInspection */
-//To Solve File REST_Controller not found
 require APPPATH . 'libraries/REST_Controller.php';
 require APPPATH . 'libraries/Format.php';
 
-/**
- * EDIT: This is an example of a few basic Cost_Center interaction methods you could use
- * all done with a hardcoded array
- *
- */
 class Cost_Centre extends CI_Controller {
     use REST_Controller {
         REST_Controller::__construct as private __resTraitConstruct;
@@ -23,23 +15,24 @@ class Cost_Centre extends CI_Controller {
         // Construct the parent class
         parent::__construct();
         $this->__resTraitConstruct();
-
         $this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->post( 'token' ) );
     }
 
     public function index_get()
     {
-        $this->load->model('Cost_Centre_model', 'cost_centre');        
+        $this->load->model('Cost_Centre_model', 'cost_centre');
+        $cost_centres = $this->cost_centre->get_by_organization($this->user->user_organization_id);
         $this->response( array(
-            'message' => $this->cost_centre->get_by_organization($this->user->user_organization_id)
+            'message' => $this->_buildTree($cost_centres)
         ), 200 );
     }
 
     public function index_post( $action='add' )
     {
+        $user = $this->user;
         if($this->_validate($action)){
             $this->load->model('Cost_Centre_model', 'cost_centre');
-            $response = $this->cost_centre->save_cost_centre($action, $this->post());            
+            $response = $this->cost_centre->save_cost_centre($action, $this->post(), $user->user_organization_id);            
             $this->response( array(
                 'message' => $response
             ), 200 );
@@ -76,8 +69,14 @@ class Cost_Centre extends CI_Controller {
 			$this->form_validation->set_rules( 'account_id', 'account_id', 'strip_tags|trim|required' );
 			$this->form_validation->set_rules( 'percentage', 'percentage', 'strip_tags|trim|required' );
 		} else if ( $action == "edit" ) {
-			// $this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
-			// $this->form_validation->set_rules( 'uuid', 'uuid', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'parent_id', 'parent_id', 'strip_tags|trim|required' );
+        } else if ( $action == "add" ) {
+			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'parent_id', 'parent_id', 'strip_tags|trim|required' );
+        } else if ( $action == "delete" ) {
+			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
         }
 
 		$this->form_validation->set_error_delimiters( '', '' );
@@ -86,5 +85,24 @@ class Cost_Centre extends CI_Controller {
 		} else {
 			return TRUE;
 		}
+    }
+
+    private function _buildTree(array $elements, $parentId = 0) {
+        $branch = array();
+    
+        foreach ($elements as $j => $element) {
+            if ($element->cost_centre_parent_id == $parentId) {
+                $children = $this->_buildTree($elements, $element->cost_centre_id);
+                if ($children) {
+                    $element->cost_centre_children = $children;
+                } else {
+                    $element->cost_centre_children = array();
+                }
+                unset($element->cost_centre_organization_id);
+                $branch[] = $element;
+            }
+        }
+    
+        return $branch;
     }
 }        

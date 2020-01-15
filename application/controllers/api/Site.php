@@ -105,7 +105,7 @@ class Site extends CI_Controller {
                 'is_logged_in' => TRUE,
                 'date_logged_in' => date( "Y-m-d H:i:s" ),
                 'organization_id' => $user->user_organization_id,
-                'organization_name' => $organization->organization_name,
+                'organization_name' => isset($organization->organization_name)? $organization->organization_name: 'Admin',
                 'role' => $user->user_role
             );
 

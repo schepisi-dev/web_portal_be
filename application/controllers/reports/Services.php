@@ -24,11 +24,8 @@ class Services extends CI_Controller {
         parent::__construct();
         $this->__resTraitConstruct();
 
-        // Configure limits and level on our controller methods                   
-        $this->methods = array(
-         'index_get'  => array( 'level' => 10, 'limit' => 500 ), //select
-         'index_post' => array( 'level' => 5, 'limit' => 50 ), //add, edit
-     );
+        $this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->post( 'token' ) );
+        
     }
 
     public function index_get()
@@ -36,8 +33,63 @@ class Services extends CI_Controller {
 
     }
 
-    public function index_post()
+    public function index_post($action = 'generate')
     {
+        if($this->_validate($action)){
+            $this->load->model('Report_model', 'report');
+            $response = $this->report->getServiceReportByCostCentre($this->post('cost_centre_id'));            
+            $this->response( array(
+                'message' => $response
+            ), 200 );
+        } else {
+			$error = validation_errors();
+		}
+		$this->response( array(
+			'message' => $error
+		), 400 );
+    }
+    
+    public function account_get($organization_id)
+    {
+        $organization_id = isset($organization_id)? $organization_id: $this->user->user_organization_id;
+        $this->load->model('Cost_Centre_model', 'cost_centre');
+        
+        $this->response( array(
+            'message' => $this->cost_centre->get_by_organization($organization_id)
+        ), 200 );
+        
+    }
+
+    private function _validate ( $action = "generate" )
+    {
+        if ( $action == "generate" ) {
+			$this->form_validation->set_rules( 'cost_centre_id', 'cost_centre_id', 'strip_tags|trim|required' );
+		} else if ( $action == "" ) {
+
+        }
+
+		$this->form_validation->set_error_delimiters( '', '' );
+		if ( $this->form_validation->run( $this ) == FALSE ) {
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+    }
+
+    private function _checkPermission($user) {
+        $withError = FALSE;
+
+        if($user->user_role!='standard'){
+            $error[] = 'User is not a Standard User!';
+
+            $withError = TRUE;
+        }
+
+        if ($withError){
+            $this->response( array(
+                'errors' => $error
+            ), 400 );
+        }
 
     }
-}        
+}

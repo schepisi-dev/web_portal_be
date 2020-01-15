@@ -49,7 +49,21 @@ class Transaction extends CI_Controller {
             $this->load->model('Transaction_model', 'transaction');
 
             $response = $this->transaction->save_transaction($this->post());
+            //save to file history
             
+            $file_history['info'] = array(
+                'type' => $this->post('type'),
+                'first_id' => $response[0]->transaction_uuid,
+                'last_id' => end($response)->transaction_uuid,
+                'date_uploaded' => date('Y-m-d H:i:s')
+            );
+            $file_history['type'] = $this->post('type');
+            $file_history['organization_id'] = $this->user->user_organization_id;
+            $file_history['uploaded_by'] = $this->user->user_first_name.' '.$this->user->user_last_name;
+
+            $this->load->model('File_History_model', 'file_history');
+            $this->file_history->save_history($file_history);
+
             $this->response( array(
                 'message' => $response
             ), 200 );

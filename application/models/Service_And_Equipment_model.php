@@ -12,27 +12,27 @@ class Service_And_Equipment_model extends MY_Model {
 	protected $soft_deletes        	= FALSE;
 
 
-    function categorized($month, $type='excl_gst'){
-		// $call_usages = $this->custom_query(
-		// 	"SUM(REPLACE(REPLACE(service_and_equipment_".$type.",'.',''),'$','')) as sum, MONTH(service_and_equipment_bill_issue_date) as month, service_and_equipment_service_type as type" , //select
-		// 	"MONTH(service_and_equipment_bill_issue_date)=".$month, //where
-		// 	"type" , //group_by
-		// );
-		// $response = array();
-		// foreach ($call_usages as $result) {
-		// 	$response[] = array(
-		// 		// 'month' => $result->month,
-		// 		'type'	=> $result->type,
-		// 		'total'	=> ($result->sum)/100,
-		// 	);
-		// }
-		// return $response;
+    function categorized($month, $year, $type='excl_gst'){
+		$call_usages = $this->custom_query(
+			"SUM(REPLACE(REPLACE(service_and_equipment_".$type.",'.',''),'$','')) as sum, MONTH(service_and_equipment_bill_issue_date) as month, service_and_equipment_service_type as type" , //select
+			"MONTH(service_and_equipment_bill_issue_date)=".$month." AND YEAR(service_and_equipment_bill_issue_date)=".$year, //where
+			"type" , //group_by
+		);
+		$response = array();
+		foreach ($call_usages as $result) {
+			$response[] = array(
+				// 'month' => $result->month,
+				'type'	=> $result->type,
+				'total'	=> ($result->sum)/100,
+			);
+		}
+		return $response;
 	}
 
-	function total($month, $type='excl_gst'){
+	function total($month, $year, $type='excl_gst'){
 		$call_usages = $this->custom_query(
-			"SUM(REPLACE(REPLACE(service_and_equipment_".$type.",'.',''),'$','')) as sum, MONTH(service_and_equipment_bill_issue_date) as month" , //select
-			"MONTH(service_and_equipment_bill_issue_date)=".$month, //where
+			"SUM(REPLACE(REPLACE(service_and_equipment_".$type.",'.',''),'$','')) as sum, MONTH(service_and_equipment_bill_issue_date) as month, YEAR(service_and_equipment_bill_issue_date) as year" , //select
+			"MONTH(service_and_equipment_bill_issue_date)=".$month." AND YEAR(service_and_equipment_bill_issue_date)=".$year, //where
 			"month" , //group_by
 		);
 		$total = 0;

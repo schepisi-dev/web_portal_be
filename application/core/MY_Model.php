@@ -58,6 +58,28 @@
 			}
 		}
 
+		public function find_all_where ( $criteria ) {
+			$query = $this->db->get_where( $this->table, $criteria );
+			if ( $query->result() != NULL ) {
+				return $query->result();
+			} else {
+				return FALSE;
+			}
+		}
+		public function find_all_where_in ( $selectQuery, $attribute, $array, $groupBy = FALSE, $where = FALSE) {	
+			$this->db->select( $selectQuery );		
+			$this->db->from( $this->table );
+			$this->db->where_in( $attribute, $array );
+			if ( $where ) $this->db->where( $where );
+			if ( $groupBy ) $this->db->group_by( $groupBy );
+			$query = $this->db->get();
+			if ( $query->result() != NULL ) {
+				return $query->result();
+			} else {
+				return FALSE;
+			}
+		}
+
 		public function find_all ( $offset = 0, $limit = 0 ) {
 			$query = $this->db->get( $this->table, $limit, $offset );
 			if ( $query->result() != NULL ) {
@@ -128,6 +150,15 @@
 			if ( $orderBy ) $this->db->order_by( $orderBy );
 			$query = $this->db->get( $this->table );
 
+			return $query->result();
+		}
+
+		public function join ( $select, $from, $joinwhere, $attribute, $array){
+			$this->db->select( $select );
+			$this->db->from( $this->table );
+			$this->db->join( $from, $joinwhere );
+			$this->db->where_in( $attribute, $array );
+			$query = $this->db->get();
 			return $query->result();
 		}
 	}

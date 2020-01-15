@@ -28,20 +28,43 @@ class Cost_centres extends CI_Controller {
     
     }
 
-    public function index_get($uuid=false)
-    {
+    public function index_get($action, $month, $year, $cost_centre_id)
+    {        
+        $response = array();
         
-        
-    }
+        $this->load->model('Report_model', 'reports');
 
-    public function account_get($organization_id)
-    {
-        $this->load->model('Cost_Centre_model', 'cost_centre');
-        
-        $this->response( array(
-            'message' => $this->cost_centre->get_by_organization($organization_id)
-        ), 200 );
-        
+        if ($action =='get') {
+            $response = array(
+                'account_numbers' => $this->reports->getTotalByCostCentre($month, $year, $cost_centre_id, 'account_number'),
+                'service_numbers' => $this->reports->getTotalByCostCentre($month, $year, $cost_centre_id, 'service_number')
+            );
+        } else if ($action =='cost') {
+            $this->load->model('Cost_Centre_model', 'cost_centre');
+            $response =  array(
+                'cost' => $this->reports->getTotalCostByCostCentre($month, $year, $cost_centre_id)
+            );
+        } else if ($action == 'month' OR $action == 'year' ) {
+            // $this->load->model('Call_And_usage_model', 'call_and_usage');
+            // $this->load->model('Chargers_And_Credit_model', 'chargers_and_credit');
+            // $this->load->model('Service_And_Equipment_model', 'service_and_equipment');
+            
+            // $response = array(
+            //     'call_and_usage' => array(
+            //         'total' => $this->call_and_usage->{'total'.$action}($month, $year, $cost_centre_ids),
+            //     ),
+            //     'chargers_and_credit' => array(
+            //         'total' => $this->chargers_and_credit->{'total'.$action}($month, $year, $cost_centre_ids),
+            //     ),
+            //     'service_and_equipment' => array(
+            //         'total' => $this->chargers_and_credit->{'total'.$action}($month, $year, $cost_centre_ids),
+            //     )
+            // );
+        } else {
+            //
+        }
+
+        $this->response( $response, 200 );
     }
 
     public function index_post( $action='add' ) {

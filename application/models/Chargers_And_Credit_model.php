@@ -12,17 +12,17 @@ class Chargers_And_Credit_model extends MY_Model {
 	protected $soft_deletes        	= FALSE;
 
 
-	function categorized($month, $type='excl_gst'){
+	function categorized($month, $year, $type='excl_gst'){
 		$chargers_credit = $this->custom_query(
-			"SUM(REPLACE(REPLACE(chargers_and_credit_".$type.",'.',''),'$','')) as sum, MONTH(chargers_and_credit_bill_issue_date) as month, chargers_and_credit_occ_description as type" , //select
-			"MONTH(chargers_and_credit_bill_issue_date)=".$month.' AND chargers_and_credit_occ_description <> "" ', //where
+			"SUM(REPLACE(REPLACE(chargers_and_credit_".$type.",'.',''),'$','')) as sum, MONTH(chargers_and_credit_bill_issue_date) as month, YEAR(chargers_and_credit_bill_issue_date) as year, chargers_and_credit_occ_description as type" , //select
+			"MONTH(chargers_and_credit_bill_issue_date)=".$month." AND YEAR(chargers_and_credit_bill_issue_date)=".$year.' AND chargers_and_credit_occ_description <> "" ', //where
 			"type" , //group_by
 		);
 		$response = array();
 		foreach ($chargers_credit as $result) {
 			$chargers_credit_accounts = $this->custom_query(
 				"SUM(REPLACE(REPLACE(chargers_and_credit_".$type.",'.',''),'$','')) as account_sum, chargers_and_credit_account_number as account_number" , //select
-				"MONTH(chargers_and_credit_bill_issue_date)=".$month." AND chargers_and_credit_occ_description LIKE '". $result->type."'", //where
+				"MONTH(chargers_and_credit_bill_issue_date)=".$month." AND YEAR(chargers_and_credit_bill_issue_date)=".$year." AND chargers_and_credit_occ_description LIKE '". $result->type."'", //where
 				"chargers_and_credit_account_number" , //group_by
 			);
 			$accounts_response = array();
@@ -42,10 +42,10 @@ class Chargers_And_Credit_model extends MY_Model {
 		return $response;
 	}
 
-	function total($month, $type='excl_gst'){
+	function total($month, $year, $type='excl_gst'){
 		$call_usages = $this->custom_query(
-			"SUM(REPLACE(REPLACE(chargers_and_credit_".$type.",'.',''),'$','')) as sum, MONTH(chargers_and_credit_bill_issue_date) as month" , //select
-			"MONTH(chargers_and_credit_bill_issue_date)=".$month, //where
+			"SUM(REPLACE(REPLACE(chargers_and_credit_".$type.",'.',''),'$','')) as sum, MONTH(chargers_and_credit_bill_issue_date) as month, YEAR(chargers_and_credit_bill_issue_date) as year" , //select
+			"MONTH(chargers_and_credit_bill_issue_date)=".$month." AND YEAR(chargers_and_credit_bill_issue_date)=".$year, //where
 			"month" , //group_by
 		);
 		$total = 0;

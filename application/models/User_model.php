@@ -48,8 +48,8 @@ class User_model extends MY_Model {
 		return FALSE;
 	}
 
-	public function _find_all($offset, $limit){
-		$users = $this->find_all($offset, $limit);
+	public function _find_all($offset, $limit, $organization_id){
+		$users = ($organization_id==0)? $this->find_all() :$this->find(array('user_organization_id' => $organization_id), $offset, $limit);
 		$formatted_user = array();
 		$this->load->model('Organization_model');
 		foreach($users as $user) {
@@ -60,13 +60,40 @@ class User_model extends MY_Model {
 				'user_email'=> $user->user_email,
 				'user_first_name'=> $user->user_first_name,
 				'user_last_name'=> $user->user_last_name,
-				'user_organization_name'=> (isset($organization))? $organization->organization_name: 'NA',
+				'user_organization_name'=> ($user->user_organization_id!=0)? $organization->organization_name: 'NA',
 				'user_role'=> $user->user_role,
 
 			);
 
 		}
 		return $formatted_user;
+	}
+
+	
+	
+    public function get_count_breakdown () {		
+		$breakdown = $this->custom_query(
+			"COUNT(user_id) as count, MONTH(user_created_on) as month" , //select
+			"YEAR(user_created_on) = ". date('Y'), //where
+			"MONTH(user_created_on)" , //group_by
+		);
+		$response = array();
+		$formatted_response = array();
+		foreach ($breakdown as $result) {
+			$response[$result->month] = $result->count;
+		}
+		$month_array = array('1' => 'January', '2' => 'February', '3' => 'March', '4' => 'April', '5' => 'May',
+                            '6' => 'June', '7' => 'July', '8' => 'August', '9' => 'September', '10' => 'October',
+							'11' => 'November', '12' => 'December');
+
+		foreach($month_array as $month => $name) {
+			$formatted_response[] = array(
+				'month' => $name,
+				'count' => isset($response[$month])? (integer)$response[$month]: 0
+			);
+		}
+		return $formatted_response;
+
 	}
 
 }
