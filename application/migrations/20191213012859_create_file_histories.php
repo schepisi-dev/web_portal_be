@@ -14,6 +14,7 @@ class Migration_Create_File_Histories extends CI_Migration
         $this->dbforge->add_field(array(
             'file_history_id' => array( 'type' => 'MEDIUMINT', 'constraint' => '8', 'unsigned' => true, 'auto_increment' => true ),
             'file_history_info' => array( 'type' => 'VARCHAR', 'constraint' => '255' ),
+            'file_history_type' => array( 'type' => 'VARCHAR', 'constraint' => '45' ),
 
             'file_history_created_on' => array( 'type' => 'DATETIME', 'null' => false ),
             'file_history_modified_on' => array( 'type' => 'DATETIME', 'null' => false ),

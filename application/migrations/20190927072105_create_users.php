@@ -34,6 +34,7 @@ class Migration_Create_Users extends CI_Migration
         $this->dbforge->create_table($this->table);
 
         $role = array('administrator', 'standard', 'basic');
+        $organization_id = array(1,1,0,2,2,0,3,3,0);
         for ($i = 1; $i <= 9; $i++)
 		{
 			$this->db->insert($this->table, [
@@ -43,7 +44,7 @@ class Migration_Create_Users extends CI_Migration
 				'user_first_name' => "Firstname {$i}",
 				'user_last_name' => "Lastname {$i}",
 				'user_role' => $role[$i%3],
-				'user_organization_id' => ($i%3)+1,
+				'user_organization_id' => $organization_id[$i],
 				'user_created_on' => date('Y-' . rand(1, 12) . '-' . rand(1, 28) . ' H:i:s'),
 			]);
 		}

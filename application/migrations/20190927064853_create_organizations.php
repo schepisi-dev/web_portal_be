@@ -23,7 +23,7 @@ class Migration_Create_Organizations extends CI_Migration
         $this->dbforge->add_key('organization_id', true);
         $this->dbforge->create_table($this->table);
 
-        $role = array('administrator', 'standard', 'basic', 'dev');
+        $role = array('clark', 'mark', 'aubrey', 'dev');
         for ($i = 0; $i <= 3; $i++)
 		{
 			$this->db->insert($this->table, [
