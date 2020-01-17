@@ -29,18 +29,42 @@ class File_History_model extends MY_Model {
 
 	}
 	
-	public function get_by_organization ($organization, $type){
+	public function get_history ($type=FALSE){
 		
 		$this->db->from( $this->table );
-		$this->db->where( 'file_history_type', $type );
+		($type)? $this->db->where( 'file_history_type', $type ):'';
 		$query = $this->db->get();
 
 		$response = array();
 		
 		foreach ($query->result() as $row){
+			$info = unserialize($row->file_history_info);
 			$response[] = array(
-				'info' => unserialize($row->file_history_info),
-				'uploaded_by' =>$row->file_history_uploaded_by
+				'id' => $row->file_history_id,
+				'date_uploaded' => $info['date_uploaded'],
+				'uploaded_by' => $row->file_history_uploaded_by,
+				'type' => $info['type'],
+				'info' => $info
+			);
+		}
+		return $response;
+	}
+	
+	public function get_notifications ($organization_id){
+		
+		$this->db->from( $this->table );
+		($organization_id==0)? '':$this->db->where( 'file_history_organization_id', $organization_id );
+		$this->db->where( 'MONTH(file_history_created_on) = '.date('m').' AND YEAR(file_history_created_on) = '.date('Y').' ');
+		$query = $this->db->get();
+
+		$response = array();
+		
+		foreach ($query->result() as $row){
+			$info = unserialize($row->file_history_info);
+			$response[] = array(
+				'date_uploaded' => $info['date_uploaded'],
+				'uploaded_by' => $row->file_history_uploaded_by,
+				'type' => $info['type']
 			);
 		}
 		return $response;

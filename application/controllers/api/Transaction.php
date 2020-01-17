@@ -58,7 +58,7 @@ class Transaction extends CI_Controller {
                 'date_uploaded' => date('Y-m-d H:i:s')
             );
             $file_history['type'] = $this->post('type');
-            $file_history['organization_id'] = $this->user->user_organization_id;
+            $file_history['organization_id'] = $this->post('organization_id');
             $file_history['uploaded_by'] = $this->user->user_first_name.' '.$this->user->user_last_name;
 
             $this->load->model('File_History_model', 'file_history');

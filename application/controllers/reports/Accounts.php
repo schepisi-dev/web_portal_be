@@ -44,8 +44,10 @@ class Accounts extends CI_Controller {
         
     }
 
-    public function month_get($month = 3, $year = 2019)
+    public function month_get($month = FALSE, $year = FALSE)
     {
+        $month = ($month)? $month: date('m');
+        $year = ($year)? $year: date('Y');
         $this->load->model('Call_And_usage_model', 'call_and_usage');
         $this->load->model('Chargers_And_Credit_model', 'chargers_and_credit');
         $this->load->model('Service_And_Equipment_model', 'service_and_equipment');
@@ -67,7 +69,9 @@ class Accounts extends CI_Controller {
         
     }
 
-    public function year_get($year = 2019){
+    public function year_get($year = FALSE)
+    {
+        $year = ($year)? $year: date('Y');
         $this->load->model('Call_And_usage_model', 'call_and_usage');
         $this->load->model('Chargers_And_Credit_model', 'chargers_and_credit');
         $this->load->model('Service_And_Equipment_model', 'service_and_equipment');

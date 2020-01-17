@@ -62,6 +62,7 @@ class User_model extends MY_Model {
 				'user_last_name'=> $user->user_last_name,
 				'user_organization_name'=> ($user->user_organization_id!=0)? $organization->organization_name: 'NA',
 				'user_role'=> $user->user_role,
+				'user_date_created' => $user->user_created_on
 
 			);
 

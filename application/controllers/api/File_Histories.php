@@ -33,11 +33,19 @@ class File_Histories extends CI_Controller {
         $this->user = $this->_getUser( ($this->get( 'token' )) ? $this->get( 'token' ) : $this->post( 'token' ) );
     }
 
-    public function index_get($type)
+    public function index_get($type=FALSE)
     {
         $this->load->model('File_History_model', 'file_history');        
         $this->response( array(
-            'message' => $this->file_history->get_by_organization($this->user->user_organization_id, $type)
+            'message' => $this->file_history->get_history($type)
+        ), 200 );
+    }
+
+    public function notifications_get()
+    {
+        $this->load->model('File_History_model', 'file_history');        
+        $this->response( array(
+            'message' => $this->file_history->get_notifications($this->user->user_organization_id)
         ), 200 );
     }
 
