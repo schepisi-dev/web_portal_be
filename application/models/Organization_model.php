@@ -18,12 +18,17 @@ class Organization_model extends MY_Model {
 	protected $deleted_field 		= "organization_deleted_on";
 
 	
-    public function save_organization ($action, $post) {		
-		$this->data['organization_name'] = $post['name'];
+    public function save_organization ($action, $post) {
 
-		if ($action=='add') {
+		if ($action=='add') {		
+			$this->data['organization_name'] = $post['name'];
 			$result = $this->save();			
-		} else {
+		} else if ($action=='edit') {		
+			$this->data['organization_name'] = $post['name'];
+			$result = $this->update(array($this->key => $post['id']));
+		} else if ($action=='delete') {		
+			$this->data['organization_deleted'] = 1;
+			$this->data['organization_deleted_on'] = date('Y-m-d H:i:s');
 			$result = $this->update(array($this->key => $post['id']));
 		}
 

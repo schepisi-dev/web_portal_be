@@ -34,7 +34,11 @@ class Migration_Create_Users extends CI_Migration
         $this->dbforge->create_table($this->table);
 
         $role = array('administrator', 'standard', 'basic');
+<<<<<<< HEAD
         $organization_id = array(0,1,1,0,2,2,0,3,3,0);
+=======
+        $organization_id = array('0','1','1','0','2','2','0','3','3','0');
+>>>>>>> 8bbce9cf8cb00537bafb5f9d1f229658492e87a0
         for ($i = 1; $i <= 9; $i++)
 		{
 			$this->db->insert($this->table, [

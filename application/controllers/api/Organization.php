@@ -84,13 +84,15 @@ class Organization extends CI_Controller {
 
     }
 
-    private function _validate ( $action = "add" ) { //action allowed: add, update
+    private function _validate ( $action = "add" ) { //action allowed: add, edit, delete
 
 		if ( $action == "add" ) {
             //required fields upon user creation = user role, user username, user password
 			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required|is_unique[organizations.organization_name]' );
 		} else if ( $action == "edit" ) {
 			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
+        } else if ( $action == "delete" ) {
 			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
         }
 

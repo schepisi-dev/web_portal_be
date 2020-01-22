@@ -28,7 +28,7 @@ class Cost_centres extends CI_Controller {
     
     }
 
-    public function index_get($action, $month, $year, $cost_centre_id)
+    public function index_get($action='get', $month=false, $year=false, $cost_centre_id)
     {        
         $response = array();
         
