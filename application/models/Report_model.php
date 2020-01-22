@@ -56,6 +56,7 @@ class Report_model extends MY_Model {
 			$accounts[] = $k->account_number;
 		}
 
+		var_dump($accounts);
 		//get service numbers using account ids in transaction_model
 		$this->load->model('Transaction_model', 'transaction');
 		$transactions = $this->transaction->find_all_where_in( 
