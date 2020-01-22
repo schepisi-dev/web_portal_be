@@ -93,13 +93,13 @@ class User extends CI_Controller {
         //check organization if valid
         $this->form_validation->set_rules( 'first_name', 'first_name', 'strip_tags|trim|required' );
         $this->form_validation->set_rules( 'last_name', 'last_name', 'strip_tags|trim|required' );
-        $this->form_validation->set_rules( 'role', 'role', 'strip_tags|trim|required' );
-        $this->form_validation->set_rules( 'organization_id', 'organization_id', 'strip_tags|trim|required|numeric' );
 
 		if ( $action == "add" ) {
             $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|callback_username_check[]' );
             $this->form_validation->set_rules( 'password', 'password', 'strip_tags|trim|required'/*|callback_password_check*/ );
             $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|callback_username_check[]' );
+            $this->form_validation->set_rules( 'role', 'role', 'strip_tags|trim|required' );
+            $this->form_validation->set_rules( 'organization_id', 'organization_id', 'strip_tags|trim|required|numeric' );
 		} else if ( $action == "edit" ) {
             $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|callback_username_check['. $this->post('id') .']' );
             $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|callback_username_check['. $this->post('id') .']' );

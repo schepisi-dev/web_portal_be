@@ -72,7 +72,8 @@ class Transaction_model extends MY_Model {
                 'transaction_table_id' => $saved_entry->{$type.'_id'},
                 'transaction_account_number' => $entry[$type.'_account_number'],
                 'transaction_service_number' => $entry[$type.'_service_number'],
-                'transaction_organization_id' => $post['organization_id']
+                'transaction_organization_id' => $post['organization_id'],
+                'transaction_date_synced' => date('Y-m-d H:i:s')
             );
             $saved = $this->save();
             $saved_transaction[] = $saved;

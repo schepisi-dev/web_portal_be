@@ -18,19 +18,25 @@ class User_model extends MY_Model {
 	protected $deleted_field 		= "user_deleted_on";
 
 	public function save_user ( $action, $data ) {
-		$this->data = array(
-			'user_username' => $data['username'],
-			'user_password' => password_hash( $data['password'], PASSWORD_BCRYPT ),
-			'user_first_name' => $data['first_name'],
-			'user_last_name' => $data['last_name'],
-			'user_email' => $data['email'],
-			'user_role' => $data['role'],
-			'user_organization_id' => $data['organization_id']
-		);
 		if ($action=='add') {
+			$this->data = array(
+				'user_username' => $data['username'],
+				'user_password' => password_hash( $data['password'], PASSWORD_BCRYPT ),
+				'user_first_name' => $data['first_name'],
+				'user_last_name' => $data['last_name'],
+				'user_email' => $data['email'],
+				'user_role' => $data['role'],
+				'user_organization_id' => $data['organization_id']
+			);
 			$response = $this->save();
 			unset($response->user_modified_on);
 		} else {
+			$this->data = array(
+				'user_username' => $data['username'],
+				'user_first_name' => $data['first_name'],
+				'user_last_name' => $data['last_name'],
+				'user_email' => $data['email']
+			);
 			$response = $this->update(array($this->key => $data['id']));
 		}
 		unset($response->user_password, $response->user_deleted, $response->user_deleted_on, $response->user_id, $response->user_organization_id);

@@ -69,7 +69,7 @@
 		public function find_all_where_in ( $selectQuery, $attribute, $array, $groupBy = FALSE, $where = FALSE) {	
 			$this->db->select( $selectQuery );		
 			$this->db->from( $this->table );
-			$this->db->where_in( $attribute, $array );
+			($array!=null)?$this->db->where_in( $attribute, $array ):'';
 			if ( $where ) $this->db->where( $where );
 			if ( $groupBy ) $this->db->group_by( $groupBy );
 			$query = $this->db->get();
