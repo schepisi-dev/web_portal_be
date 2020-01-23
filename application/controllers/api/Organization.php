@@ -2,17 +2,9 @@
 use Restserver\Libraries\REST_Controller;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// This can be removed if you use __autoload() in config.php OR use Modular Extensions
-/** @noinspection PhpIncludeInspection */
-//To Solve File REST_Controller not found
 require APPPATH . 'libraries/REST_Controller.php';
 require APPPATH . 'libraries/Format.php';
 
-/**
- * EDIT: This is an example of a few basic Organization interaction methods you could use
- * all done with a hardcoded array
- *
- */
 class Organization extends CI_Controller {
     use REST_Controller {
         REST_Controller::__construct as private __resTraitConstruct;
@@ -88,8 +80,13 @@ class Organization extends CI_Controller {
 
 		if ( $action == "add" ) {
             //required fields upon user creation = user role, user username, user password
-			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required|is_unique[organizations.organization_name]' );
+            $this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required|is_unique[organizations.organization_name]',
+                    array(
+                        'is_unique' => 'You have provided an organization name that is already existing. Please provide a new organization name, for creation to proceed.',
+                        'required' => 'Please provide an organization name'
+                    ) );
 		} else if ( $action == "edit" ) {
+            //TODO: Check if organization name already exists
 			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
 			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
         } else if ( $action == "delete" ) {

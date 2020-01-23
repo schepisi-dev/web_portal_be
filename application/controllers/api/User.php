@@ -2,17 +2,9 @@
 use Restserver\Libraries\REST_Controller;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// This can be removed if you use __autoload() in config.php OR use Modular Extensions
-/** @noinspection PhpIncludeInspection */
-//To Solve File REST_Controller not found
 require APPPATH . 'libraries/REST_Controller.php';
 require APPPATH . 'libraries/Format.php';
 
-/**
- * EDIT: This is an example of a few basic User interaction methods you could use
- * all done with a hardcoded array
- *
- */
 class User extends CI_Controller {
     use REST_Controller {
         REST_Controller::__construct as private __resTraitConstruct;
@@ -51,8 +43,6 @@ class User extends CI_Controller {
 
     public function index_get($username=false)
     {
-        //if organization id = 0, return all users
-        //if not equal to 0 and standard user, fetch all co-org users
         $this->load->model('User_model');
         $response = $this->User_model->_find_all($this->get('offset'), $this->get('limit'), $this->user->user_organization_id);            
         $this->response( array(
@@ -86,25 +76,22 @@ class User extends CI_Controller {
     
     private function _validate ( $action = "add" )
     { 
-        //action allowed: add, update        
-        //upon saving user, check if user role is not admin
-        //if not admin, require organization id
-        //username,email must be unique
-        //check organization if valid
-        $this->form_validation->set_rules( 'first_name', 'first_name', 'strip_tags|trim|required' );
-        $this->form_validation->set_rules( 'last_name', 'last_name', 'strip_tags|trim|required' );
+        //action allowed: add, update
+        //if admin, set organization id as 0
+        $this->form_validation->set_rules( 'first_name', 'first_name', 'strip_tags|trim|required');
+        $this->form_validation->set_rules( 'last_name', 'last_name', 'strip_tags|trim|required');
 
 		if ( $action == "add" ) {
-            $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|callback_username_check[]' );
-            $this->form_validation->set_rules( 'password', 'password', 'strip_tags|trim|required'/*|callback_password_check*/ );
-            $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|callback_username_check[]' );
-            $this->form_validation->set_rules( 'role', 'role', 'strip_tags|trim|required' );
-            $this->form_validation->set_rules( 'organization_id', 'organization_id', 'strip_tags|trim|required|numeric' );
+            $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|is_unique[users.user_username]');
+            $this->form_validation->set_rules( 'password', 'password', 'strip_tags|trim|required'/*|callback_password_check*/);
+            $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|is_unique[users.user_email]');
+            $this->form_validation->set_rules( 'role', 'role', 'strip_tags|trim|required');
+            $this->form_validation->set_rules( 'organization_id', 'organization_id', 'strip_tags|trim|required|numeric|callback_organization_check[]');
 		} else if ( $action == "edit" ) {
-            $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|callback_username_check['. $this->post('id') .']' );
-            $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|callback_username_check['. $this->post('id') .']' );
+            $this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required|callback_user_check[]' );
+            $this->form_validation->set_rules( 'email', 'email', 'strip_tags|trim|required|valid_email|callback_email_check['. $this->post('id') .']');
+            $this->form_validation->set_rules( 'username', 'username', 'strip_tags|trim|required|callback_username_check['. $this->post('id') .']');
             //validate is user id is valid
-            $this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
         }
 
 		$this->form_validation->set_error_delimiters( '', '' );
@@ -131,6 +118,18 @@ class User extends CI_Controller {
         }
 
     }
+    
+    public function user_check($id=null)
+    {
+        $this->load->model('User_model');
+        $user = $this->User_model->get_by_attribute('user_id', $id);
+        if ($user){
+            return TRUE; 
+        } else {
+            $this->form_validation->set_message('user_check', 'User does not exists');
+            return FALSE;
+        }
+    }
 
     public function password_check($password)
     {
@@ -153,6 +152,22 @@ class User extends CI_Controller {
                 return FALSE;
             }
         } 
+        return TRUE;
+    }
+
+    public function organization_check($id=null)
+    {
+        $this->load->model('Organization_model');
+        $organization = $this->Organization_model->get_by_attribute('organization_id', $id);
+        if ($organization){
+            if($organization->organization_deleted == 1){            
+                $this->form_validation->set_message('organization_check', 'Organization already deleted');
+                return FALSE;
+            } 
+        } else {
+            $this->form_validation->set_message('organization_check', 'Organization does not exists');
+                return FALSE;
+        }
         return TRUE;
     }
 
