@@ -55,23 +55,25 @@ class User_model extends MY_Model {
 	}
 
 	public function _find_all($offset, $limit, $organization_id){
-		$users = ($organization_id==0)? $this->find_all() :$this->find(array('user_organization_id' => $organization_id), $offset, $limit);
+		$users = ($organization_id==0)? $this->find_all() :$this->find(array('user_organization_id' => $organization_id, 'user_deleted' => 0), $offset, $limit);
 		$formatted_user = array();
 		$this->load->model('Organization_model');
-		foreach($users as $user) {
-			$organization = $this->Organization_model->get_by_id($user->user_organization_id);
-			$formatted_user[] = array(
-				'user_id' => $user->user_id,
-				'user_username'=> $user->user_username,
-				'user_email'=> $user->user_email,
-				'user_first_name'=> $user->user_first_name,
-				'user_last_name'=> $user->user_last_name,
-				'user_organization_name'=> ($user->user_organization_id!=0)? $organization->organization_name: 'NA',
-				'user_role'=> $user->user_role,
-				'user_date_created' => $user->user_created_on
-
-			);
-
+		if ($users) {
+			foreach($users as $user) {
+				$organization = $this->Organization_model->get_by_id($user->user_organization_id);
+				$formatted_user[] = array(
+					'user_id' => $user->user_id,
+					'user_username'=> $user->user_username,
+					'user_email'=> $user->user_email,
+					'user_first_name'=> $user->user_first_name,
+					'user_last_name'=> $user->user_last_name,
+					'user_organization_name'=> ($user->user_organization_id!=0)? $organization->organization_name: 'NA',
+					'user_role'=> $user->user_role,
+					'user_date_created' => $user->user_created_on
+	
+				);
+	
+			}
 		}
 		return $formatted_user;
 	}

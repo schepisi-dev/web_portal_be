@@ -81,6 +81,7 @@
 		}
 
 		public function find_all ( $offset = 0, $limit = 0 ) {
+			($this->soft_deletes)? $this->db->where($this->deleted, 0 ): '';
 			$query = $this->db->get( $this->table, $limit, $offset );
 			if ( $query->result() != NULL ) {
 				return $query->result();
