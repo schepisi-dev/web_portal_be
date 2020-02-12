@@ -51,6 +51,17 @@ class Organization extends CI_Controller {
         
     }
 
+    public function archived_get()
+    {
+        //TODO: if logged in user is standard/basic, always set org id as the logged in user
+        $this->load->model('Organization_model', 'organization');
+        $response = $this->organization->find_all_where(array('organization_deleted' => 1));
+        $this->response( array(
+            'message' => $response
+        ), 200 );
+        
+    }
+
     public function index_post( $action='add' )
     {
         if($this->_validate($action)){
@@ -87,10 +98,10 @@ class Organization extends CI_Controller {
                     ) );
 		} else if ( $action == "edit" ) {
             //TODO: Check if organization name already exists
-			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' );
-			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'name', 'name', 'strip_tags|trim|required' ); //TODO Validate name before saving
+			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' ); //TODO validate id 
         } else if ( $action == "delete" ) {
-			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' );
+			$this->form_validation->set_rules( 'id', 'id', 'strip_tags|trim|required' ); //TODO validate id
         }
 
 		$this->form_validation->set_error_delimiters( '', '' );
